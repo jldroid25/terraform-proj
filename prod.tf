@@ -13,3 +13,35 @@ resource "aws_s3_bucket" "prod_tf_course" {
 
 # we need a vpc  yes we can define on but lets use the aws default one. 
 resource "aws_default_vpc" "default" {}
+
+#adding a security group resources & rules.
+resource "aws_security_group" "prod_web" {
+    name        = "prod_web" 
+    description = "Allow standard http and https ports inbound and everything outbound"
+
+    ingress {
+        from_port    = 80
+        to_port      = 80
+        protocol     = "tcp"
+        cidr_blocks = ["0.0.0.0/0"] 
+    }
+#rule for incoming traffic to server we could also use our IP address as well
+      ingress {
+        from_port    = 443
+        to_port      = 443
+        protocol     = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]  
+    }
+
+#rule for out going traffic from server to the internet
+    egress {
+        from_port    = 0
+        to_port      = 0
+        protocol     = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    tags = {
+        "Terraform" : "true"
+    }
+
+}
