@@ -30,7 +30,7 @@ resource "aws_security_group" "prod_web" {
         from_port    = 443
         to_port      = 443
         protocol     = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]  
+        cidr_blocks  = ["0.0.0.0/0"]  
     }
 
 #rule for out going traffic from server to the internet
@@ -38,10 +38,28 @@ resource "aws_security_group" "prod_web" {
         from_port    = 0
         to_port      = 0
         protocol     = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks  = ["0.0.0.0/0"]
     }
     tags = {
         "Terraform" : "true"
     }
+}
 
+# Define our instance/server nginx & our security group
+resource "aws_instance" "prod_web" {
+    ami           = "ami-049f3725664f54adb"
+    instance_type = "t2.micro"
+
+    tags = {
+        "Terraform" : "true"
+    }
+}
+
+resource "aws_eip" "prod_web"{
+
+    instance = aws_instance.prod_web.id
+
+     tags = {
+        "Terraform" : "true"
+    }
 }
