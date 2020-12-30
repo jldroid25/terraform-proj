@@ -47,18 +47,24 @@ resource "aws_security_group" "prod_web" {
 
 # Define our instance/server nginx & our security group
 resource "aws_instance" "prod_web" {
+    count = 2
+
     ami           = "ami-049f3725664f54adb"
     instance_type = "t2.micro"
-
     tags = {
         "Terraform" : "true"
     }
 }
 
-resource "aws_eip" "prod_web"{
+# Associate & allocate our Elastic IP to our instance
+# This will decouple our EIP , allow flexibility in scaling up
+resource "aws_eip_association" "prod_web" {
+    instance_id  = aws_instance.prod_web.0.id 
+    allocation_id  = aws_eip.prod_web.id
+}
 
-    instance = aws_instance.prod_web.id
-
+# Create an Elastic IP
+resource "aws_eip" "prod_web" {
      tags = {
         "Terraform" : "true"
     }
